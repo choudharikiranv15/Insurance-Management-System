@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm start)",
+      "Bash(npm install:*)",
+      "Bash(cat package.json)",
+      "Bash(npm ls react react-dom)",
+      "Bash(npm run dev)",
+      "Bash(cat node_modules/react/package.json)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :3000)",
+      "Bash(findstr LISTENING)",
+      "Bash(taskkill //PID 21676 //F)",
+      "Bash(dir /s /b)",
+      "Bash(tree -L 3 -I 'node_modules|dist|build')",
+      "Bash(dir /s /b *.js)",
+      "Bash(findstr /v node_modules)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

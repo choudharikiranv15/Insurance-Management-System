@@ -1,0 +1,36 @@
+{
+  "name": "claimease",
+  "version": "1.0.0",
+  "description": "ClaimEase - Making insurance claims easy and hassle-free",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend_backup"
+  ],
+  "scripts": {
+    "install:all": "npm install && cd backend && npm install && cd ../frontend_backup && npm install",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend_backup && npm start",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend_backup && npm start",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" --names \"backend,frontend\" --prefix-colors \"blue,green\"",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\" --names \"backend,frontend\" --prefix-colors \"blue,green\"",
+    "build:frontend": "cd frontend_backup && npm run build",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend_backup && npm test"
+  },
+  "keywords": [
+    "insurance",
+    "management",
+    "fullstack"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "overrides": {
+    "react": "19.2.0",
+    "react-dom": "19.2.0"
+  }
+}
