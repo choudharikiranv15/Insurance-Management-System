@@ -1,6 +1,83 @@
 # Insurance Management System - Setup Guide
 
+## Quick Start Guide
+
+Follow these steps to get the project running on your machine:
+
+### Step 1: Prerequisites Check
+Before starting, ensure you have:
+- ✅ **Node.js** (v16 or higher) - [Download](https://nodejs.org/)
+- ✅ **MongoDB** (v5 or higher) - [Download](https://www.mongodb.com/try/download/community)
+- ✅ **Git** - [Download](https://git-scm.com/)
+
+### Step 2: Clone the Repository
+```bash
+git clone https://github.com/choudharikiranv15/Insurance-Management-System.git
+cd Insurance-Management-System
+```
+
+### Step 3: Install Dependencies
+```bash
+# Install all dependencies (backend + frontend)
+npm run install:all
+```
+
+### Step 4: Setup MongoDB
+```bash
+# Windows - Start MongoDB service
+net start MongoDB
+
+# macOS/Linux - Start MongoDB
+mongod
+# OR if installed as service: sudo systemctl start mongod
+```
+
+### Step 5: Configure Environment Variables
+The backend already has a `.env` file with default settings. For basic local development, the defaults work fine.
+
+**For email notifications** (optional):
+1. Visit [https://ethereal.email/](https://ethereal.email/)
+2. Click "Create Ethereal Account"
+3. Update `backend/.env` with the SMTP credentials provided
+
+### Step 6: Seed Database (Optional but Recommended)
+```bash
+cd backend
+npm run seed
+cd ..
+```
+This creates sample users, policies, claims, and payments for testing.
+
+### Step 7: Run the Application
+```bash
+# From the root directory, run both servers:
+npm run dev
+```
+
+This starts:
+- 🔹 **Backend API**: http://localhost:5000
+- 🔹 **Frontend App**: http://localhost:3000
+
+### Step 8: Login and Test
+Open http://localhost:3000 in your browser and login with:
+
+**Admin Account:**
+- Email: `admin@insurance.com`
+- Password: `Admin@123`
+
+**Customer Account:**
+- Email: `customer@insurance.com`
+- Password: `Customer@123`
+
+**Agent Account:**
+- Email: `agent@insurance.com`
+- Password: `Agent@123`
+
+---
+
 ## Table of Contents
+- [Quick Start Guide](#quick-start-guide)
+- [Detailed Setup Instructions](#detailed-setup-instructions)
 - [Prerequisites](#prerequisites)
 - [Technology Stack](#technology-stack)
 - [Project Structure](#project-structure)
@@ -12,6 +89,8 @@
 - [Common Issues](#common-issues)
 
 ---
+
+## Detailed Setup Instructions
 
 ## Prerequisites
 
@@ -239,7 +318,7 @@ This will create:
 
 ## Running the Application
 
-### Option 1: Run Both Servers Concurrently (Recommended)
+### ⚡ Method 1: Run Both Servers Together (Recommended)
 
 From the **root directory**:
 ```bash
@@ -247,28 +326,61 @@ npm run dev
 ```
 
 This will start:
-- Backend on `http://localhost:5000`
-- Frontend on `http://localhost:3000`
+- ✅ Backend on `http://localhost:5000`
+- ✅ Frontend on `http://localhost:3000`
 
-### Option 2: Run Servers Individually
+**You should see output like:**
+```
+[backend] Server running on port 5000
+[backend] MongoDB connected successfully
+[frontend] webpack compiled successfully
+[frontend] On Your Network: http://localhost:3000
+```
 
-#### Terminal 1 - Backend
+### Method 2: Run Servers Separately
+
+**Open 2 terminal windows:**
+
+**Terminal 1 - Start Backend:**
 ```bash
 cd backend
 npm run dev
 ```
 
-#### Terminal 2 - Frontend
+**Terminal 2 - Start Frontend:**
 ```bash
 cd frontend_backup
 npm start
 ```
 
-### Access the Application
+### ✅ Verify Everything is Working
 
-- **Frontend**: [http://localhost:3000](http://localhost:3000)
-- **Backend API**: [http://localhost:5000](http://localhost:5000)
-- **API Health Check**: [http://localhost:5000/api/health](http://localhost:5000/api/health)
+1. **Check Backend Health:**
+   - Open: http://localhost:5000/api/health
+   - You should see: `{"status":"OK","message":"API is running"}`
+
+2. **Access Frontend:**
+   - Open: http://localhost:3000
+   - You should see the login page
+
+3. **Login with Default Credentials:**
+   - Email: `admin@insurance.com`
+   - Password: `Admin@123`
+
+### 🌐 Access Points
+
+- **Frontend Application**: http://localhost:3000
+- **Backend API**: http://localhost:5000
+- **API Health Check**: http://localhost:5000/api/health
+- **MongoDB**: mongodb://localhost:27017/insurance_management
+
+### 🛑 Stopping the Application
+
+**If using `npm run dev`:**
+- Press `Ctrl + C` in the terminal
+
+**If running separately:**
+- Press `Ctrl + C` in both terminal windows
 
 ---
 
@@ -338,64 +450,245 @@ npm test
 
 ---
 
-## Common Issues
+## Common Issues & Solutions
 
-### Issue 1: MongoDB Connection Error
-**Error**: `MongoNetworkError: failed to connect to server`
+### ❌ Issue 1: MongoDB Connection Error
+**Error Message:**
+```
+MongoNetworkError: failed to connect to server [localhost:27017]
+```
 
-**Solution**:
-- Ensure MongoDB is running
-- Check if MongoDB is running on port 27017
-- Verify `MONGODB_URI` in `.env`
+**Solutions:**
+1. **Check if MongoDB is running:**
+   ```bash
+   # Windows
+   net start MongoDB
 
-### Issue 2: Port Already in Use
-**Error**: `Port 5000 is already in use`
+   # macOS/Linux
+   sudo systemctl status mongod
+   # or
+   ps aux | grep mongod
+   ```
 
-**Solution**:
-- Change `PORT` in `backend/.env` to another port (e.g., 5001)
-- Kill the process using the port:
-  ```bash
-  # Windows
-  netstat -ano | findstr :5000
-  taskkill /PID <PID> /F
+2. **Verify MongoDB is listening on port 27017:**
+   ```bash
+   # Windows
+   netstat -an | findstr :27017
 
-  # macOS/Linux
-  lsof -ti:5000 | xargs kill -9
-  ```
+   # macOS/Linux
+   lsof -i :27017
+   ```
 
-### Issue 3: Module Not Found
-**Error**: `Cannot find module 'xyz'`
+3. **Check `MONGODB_URI` in `backend/.env`:**
+   ```env
+   MONGODB_URI=mongodb://localhost:27017/insurance_management
+   ```
 
-**Solution**:
+### ❌ Issue 2: Port Already in Use
+**Error Message:**
+```
+Error: Port 5000 is already in use
+```
+
+**Solutions:**
+
+**Option 1: Kill the process using the port**
 ```bash
+# Windows
+netstat -ano | findstr :5000
+taskkill /PID <PID> /F
+
+# macOS/Linux
+lsof -ti:5000 | xargs kill -9
+```
+
+**Option 2: Change the port**
+Edit `backend/.env`:
+```env
+PORT=5001
+```
+Then update frontend API URL in `frontend_backup/src/config/api.js`
+
+### ❌ Issue 3: Module Not Found
+**Error Message:**
+```
+Error: Cannot find module 'express'
+```
+
+**Solution:**
+```bash
+# Navigate to the directory with the error
+cd backend  # or cd frontend_backup
+
 # Delete node_modules and reinstall
 rm -rf node_modules package-lock.json
 npm install
+
+# Or use the install:all command from root
+cd ..
+npm run install:all
 ```
 
-### Issue 4: JWT Secret Warning
-**Warning**: Token verification failures
+### ❌ Issue 4: Dependencies Installation Failed
+**Error Message:**
+```
+npm ERR! code ENOENT
+```
 
-**Solution**:
-- Ensure `JWT_SECRET` is set in `backend/.env`
-- Use a strong, unique secret key (minimum 32 characters)
+**Solution:**
+```bash
+# Clear npm cache
+npm cache clean --force
 
-### Issue 5: CORS Errors
-**Error**: `Access to XMLHttpRequest has been blocked by CORS policy`
+# Delete all node_modules
+rm -rf node_modules
+rm -rf backend/node_modules
+rm -rf frontend_backup/node_modules
 
-**Solution**:
-- Verify `CORS_ORIGIN` in `backend/.env` includes your frontend URL
-- Default: `http://localhost:3000,http://localhost:3001`
+# Reinstall
+npm run install:all
+```
 
-### Issue 6: File Upload Errors
-**Error**: Upload directory not found
+### ❌ Issue 5: Frontend Won't Start
+**Error Message:**
+```
+Module build failed or webpack errors
+```
 
-**Solution**:
+**Solutions:**
+1. **Check Node.js version:**
+   ```bash
+   node --version  # Should be v16 or higher
+   ```
+
+2. **Reinstall frontend dependencies:**
+   ```bash
+   cd frontend_backup
+   rm -rf node_modules package-lock.json
+   npm install
+   npm start
+   ```
+
+3. **Clear React cache:**
+   ```bash
+   rm -rf node_modules/.cache
+   ```
+
+### ❌ Issue 6: CORS Errors
+**Error Message:**
+```
+Access to XMLHttpRequest has been blocked by CORS policy
+```
+
+**Solution:**
+1. Verify `CORS_ORIGIN` in `backend/.env`:
+   ```env
+   CORS_ORIGIN=http://localhost:3000,http://localhost:3001
+   ```
+
+2. Ensure backend is running on port 5000
+
+3. Check frontend API configuration in `frontend_backup/src/services/api.js`
+
+### ❌ Issue 7: Login Not Working / JWT Errors
+**Error Message:**
+```
+Token verification failed
+```
+
+**Solutions:**
+1. **Check `backend/.env` has JWT secrets:**
+   ```env
+   JWT_SECRET=your-super-secret-jwt-key-change-in-production-256-bit-key
+   JWT_REFRESH_SECRET=your-refresh-token-secret-change-in-production-256-bit-key
+   ```
+
+2. **Clear browser localStorage:**
+   - Open browser DevTools (F12)
+   - Go to Application → Local Storage
+   - Clear all entries
+   - Try logging in again
+
+3. **Verify database has seeded users:**
+   ```bash
+   cd backend
+   npm run seed
+   ```
+
+### ❌ Issue 8: File Upload Errors
+**Error Message:**
+```
+ENOENT: no such file or directory, open 'uploads/...'
+```
+
+**Solution:**
 ```bash
 cd backend
 mkdir -p uploads/documents
 mkdir -p uploads/profile-images
+mkdir -p uploads/claims
 ```
+
+### ❌ Issue 9: Email Notifications Not Working
+**Error Message:**
+```
+Error sending email
+```
+
+**Solution:**
+1. Get free test SMTP credentials from [Ethereal Email](https://ethereal.email/)
+2. Update `backend/.env`:
+   ```env
+   SMTP_HOST=smtp.ethereal.email
+   SMTP_PORT=587
+   SMTP_EMAIL=your-ethereal-email@ethereal.email
+   SMTP_PASSWORD=your-ethereal-password
+   ```
+3. Restart backend server
+
+### ❌ Issue 10: Database Seeding Fails
+**Error Message:**
+```
+Error seeding database
+```
+
+**Solution:**
+```bash
+# Ensure MongoDB is running
+net start MongoDB  # Windows
+# or
+sudo systemctl start mongod  # Linux
+
+# Drop existing database and reseed
+cd backend
+# Run seed script
+npm run seed
+```
+
+### 🔍 Still Having Issues?
+
+1. **Check all services are running:**
+   - MongoDB: `net start MongoDB` (Windows) or `sudo systemctl status mongod` (Linux)
+   - Backend: Should show "Server running on port 5000"
+   - Frontend: Should show "webpack compiled successfully"
+
+2. **Check logs:**
+   - Backend logs appear in the terminal running `npm run dev`
+   - Frontend errors appear in browser console (F12)
+
+3. **Verify Node.js and npm versions:**
+   ```bash
+   node --version  # Should be v16+
+   npm --version   # Should be v8+
+   ```
+
+4. **Try a complete fresh install:**
+   ```bash
+   # Delete everything and reinstall
+   rm -rf node_modules backend/node_modules frontend_backup/node_modules
+   rm -rf package-lock.json backend/package-lock.json frontend_backup/package-lock.json
+   npm run install:all
+   ```
 
 ---
 
